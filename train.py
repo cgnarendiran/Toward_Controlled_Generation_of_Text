@@ -2,7 +2,7 @@ import random
 import torch.nn as nn
 from keras.datasets import imdb
 from torch.autograd import Variable
-import cPickle as pkl
+import pickle as pkl
 
 from Constants import *
 from Modules import Encoder, Generator, Discriminator
@@ -75,7 +75,7 @@ def prepare_sequence(seq, to_ix):
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
-print "Loading data into cuda"
+print("Loading data into cuda")
 
 train_x = []
 train_y = []
@@ -96,7 +96,7 @@ for tr in train:
         Variable(torch.LongTensor([int(tr[2])])).cuda() if USE_CUDA else Variable(torch.LongTensor([int(tr[2])])))
 
 train_data = list(zip(train_x, train_y, code_labels))
-print "Finished loading data into cuda"
+print("Finished loading data into cuda")
 
 
 def getBatch(batch_size, train_data):
@@ -114,7 +114,7 @@ def getBatch(batch_size, train_data):
         yield (x, y, c)
 
 
-print "encoders"
+print("encoders")
 encoder = Encoder(len(word2index), HIDDEN_SIZE, LATENT_SIZE, 2)
 generator = Generator(HIDDEN_SIZE, len(word2index), LATENT_SIZE, CODE_SIZE)
 discriminator = Discriminator(len(word2index), 100, 2, 30, [3, 4, 5], 0.8)
@@ -129,7 +129,7 @@ enc_optim = torch.optim.Adam(encoder.parameters(), lr=LEARNING_RATE)
 gen_optim = torch.optim.Adam(generator.parameters(), lr=LEARNING_RATE)
 dis_optiom = torch.optim.Adam(discriminator.parameters(), lr=LEARNING_RATE)
 
-print "train"
+print("train")
 for step in range(STEP):
     for i, (x, y, c) in enumerate(getBatch(BATCH_SIZE, train_data)):
 
@@ -151,7 +151,7 @@ for step in range(STEP):
         kld_loss = torch.sum(0.5 * (mu ** 2 + torch.exp(log_var) - log_var - 1))
 
         #     KL_COST_ANNEALING
-        cost_annealing_check = recon_loss.data.cpu().numpy()[0] if USE_CUDA else recon_loss.data.numpy()[0]
+        cost_annealing_check = recon_loss.data.cpu().numpy() if USE_CUDA else recon_loss.data.numpy()
         if cost_annealing_check < 1.5:
             KTA = 0.5  # KL cost term annealing
         elif cost_annealing_check < 1.0:
