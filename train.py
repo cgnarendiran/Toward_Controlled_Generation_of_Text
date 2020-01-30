@@ -1,5 +1,6 @@
 import random
 import torch.nn as nn
+import os; os.environ['KERAS_BACKEND'] = 'theano'
 from keras.datasets import imdb
 from torch.autograd import Variable
 import pickle as pkl
@@ -175,9 +176,9 @@ for step in range(STEP):
     # KTA+=1/STEP
     # KTA = round(KTA,3)
 
-    elbo_for_print = ELBO.data.cpu().numpy()[0] if USE_CUDA else ELBO.data.numpy()[0]
-    recon_for_print = recon_loss.data.cpu().numpy()[0] if USE_CUDA else recon_loss.data.numpy()[0]
-    kld_for_print = kld_loss.data.cpu().numpy()[0] if USE_CUDA else kld_loss.data.numpy()[0]
+    elbo_for_print = ELBO.data.cpu().numpy() if USE_CUDA else ELBO.data.numpy()
+    recon_for_print = recon_loss.data.cpu().numpy() if USE_CUDA else recon_loss.data.numpy()
+    kld_for_print = kld_loss.data.cpu().numpy() if USE_CUDA else kld_loss.data.numpy()
     print("[%d/%d] ELBO : %.4f , RECON : %.4f & KLD : %.4f" % (step, STEP, elbo_for_print,
                                                                recon_for_print,
                                                                kld_for_print))
